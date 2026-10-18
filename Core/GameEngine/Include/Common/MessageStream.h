@@ -274,6 +274,16 @@ public:
 		MSG_META_BEGIN_CAMERA_ZOOM_OUT,
 		MSG_META_END_CAMERA_ZOOM_OUT,
 		MSG_META_CAMERA_RESET,
+		MSG_META_BEGIN_CAMERA_PITCH_UP,							///< TheSuperHackers @feature Phantomias 18/10/2026 Tilt camera up while key is held (idea from Generals Online)
+		MSG_META_END_CAMERA_PITCH_UP,
+		MSG_META_ALT_BEGIN_CAMERA_PITCH_UP,					///< TheSuperHackers @feature Phantomias 18/10/2026 Tilt camera up (alternative mapping)
+		MSG_META_ALT_END_CAMERA_PITCH_UP,
+		MSG_META_BEGIN_CAMERA_PITCH_DOWN,						///< TheSuperHackers @feature Phantomias 18/10/2026 Tilt camera down while key is held (idea from Generals Online)
+		MSG_META_END_CAMERA_PITCH_DOWN,
+		MSG_META_ALT_BEGIN_CAMERA_PITCH_DOWN,				///< TheSuperHackers @feature Phantomias 18/10/2026 Tilt camera down (alternative mapping)
+		MSG_META_ALT_END_CAMERA_PITCH_DOWN,
+		MSG_META_CAMERA_PITCH_RESET,								///< TheSuperHackers @feature Phantomias 18/10/2026 Reset camera tilt to default
+		MSG_META_ALT_CAMERA_PITCH_RESET,						///< TheSuperHackers @feature Phantomias 18/10/2026 Reset camera tilt to default (alternative mapping)
     MSG_META_TOGGLE_CAMERA_TRACKING_DRAWABLE,
 		MSG_META_TOGGLE_FAST_FORWARD_REPLAY,				///< Toggle the fast forward feature
 		MSG_META_TOGGLE_PAUSE,											///< TheSuperHackers @feature Toggle game pause

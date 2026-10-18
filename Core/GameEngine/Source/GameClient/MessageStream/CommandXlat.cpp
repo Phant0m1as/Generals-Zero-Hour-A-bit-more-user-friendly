@@ -3531,6 +3531,27 @@ GameMessageDisposition CommandTranslator::translateGameMessage(const GameMessage
 		case GameMessage::MSG_META_CAMERA_RESET:
 			TheInGameUI->resetCamera();
 			break;
+		// TheSuperHackers @feature Phantomias 18/10/2026 Tilt the camera with keys while they are held.
+		case GameMessage::MSG_META_BEGIN_CAMERA_PITCH_UP:
+		case GameMessage::MSG_META_ALT_BEGIN_CAMERA_PITCH_UP:
+			TheInGameUI->setCameraPitchUp( true );
+			break;
+		case GameMessage::MSG_META_END_CAMERA_PITCH_UP:
+		case GameMessage::MSG_META_ALT_END_CAMERA_PITCH_UP:
+			TheInGameUI->setCameraPitchUp( false );
+			break;
+		case GameMessage::MSG_META_BEGIN_CAMERA_PITCH_DOWN:
+		case GameMessage::MSG_META_ALT_BEGIN_CAMERA_PITCH_DOWN:
+			TheInGameUI->setCameraPitchDown( true );
+			break;
+		case GameMessage::MSG_META_END_CAMERA_PITCH_DOWN:
+		case GameMessage::MSG_META_ALT_END_CAMERA_PITCH_DOWN:
+			TheInGameUI->setCameraPitchDown( false );
+			break;
+		case GameMessage::MSG_META_CAMERA_PITCH_RESET:
+		case GameMessage::MSG_META_ALT_CAMERA_PITCH_RESET:
+			TheTacticalView->userSetPitchToDefault();
+			break;
 		case GameMessage::MSG_META_TOGGLE_CAMERA_TRACKING_DRAWABLE:
 			TheInGameUI->setCameraTrackingDrawable( true );
 			break;
