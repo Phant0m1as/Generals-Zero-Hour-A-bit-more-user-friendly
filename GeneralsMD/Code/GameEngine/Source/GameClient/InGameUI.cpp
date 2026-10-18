@@ -1247,6 +1247,9 @@ InGameUI::InGameUI()
 	m_attackMoveToMode	= false;
 	m_preferSelection		= false;
 
+	m_cameraPitchingUp = false;
+	m_cameraPitchingDown = false;
+
 	m_curRcType = RADIUSCURSOR_NONE;
 
 	m_soloNexusSelectedDrawableID = INVALID_DRAWABLE_ID;
@@ -2091,7 +2094,8 @@ void InGameUI::update()
 		layout->runUpdate();
 	}
 
-	if (m_cameraRotatingLeft || m_cameraRotatingRight || m_cameraZoomingIn || m_cameraZoomingOut)
+	if (m_cameraRotatingLeft || m_cameraRotatingRight || m_cameraZoomingIn || m_cameraZoomingOut
+		|| m_cameraPitchingUp || m_cameraPitchingDown)
 	{
 		// TheSuperHackers @tweak The camera rotation and zoom are now decoupled from the render update.
 		const Real fpsRatio = TheFramePacer->getBaseOverUpdateFpsRatio();
@@ -2114,6 +2118,25 @@ void InGameUI::update()
 		else if( m_cameraZoomingOut && !m_cameraZoomingIn )
 		{
 			TheTacticalView->userZoom( +zoomHeight );
+		}
+
+		// TheSuperHackers @feature Phantomias 18/10/2026 Tilt the camera with keys, like in Generals Online.
+		// Tilting is half as fast as rotating, because a degree of tilt changes the view more.
+		// The keys cannot tilt flatter than 37.5 degrees in a match (16.5 in a replay), so that a flat
+		// camera does not give a view advantage. Cinematic cameras of scripts are not affected.
+		if( m_cameraPitchingUp && !m_cameraPitchingDown )
+		{
+			TheTacticalView->userSetPitch( TheTacticalView->getPitch() + rotateAngle * 0.5f );
+		}
+		else if( m_cameraPitchingDown && !m_cameraPitchingUp )
+		{
+			const Bool inReplay = TheGameLogic != nullptr && TheGameLogic->isInReplayGame();
+			const Real minPitch = DEG_TO_RADF( inReplay ? 16.5f : 37.5f );
+			const Real currentPitch = TheTacticalView->getPitch();
+			if( currentPitch > minPitch )
+			{
+				TheTacticalView->userSetPitch( max( minPitch, currentPitch - rotateAngle * 0.5f ) );
+			}
 		}
 	}
 
@@ -2231,6 +2254,8 @@ void InGameUI::reset()
 	setCameraRotateRight(false);
 	setCameraZoomIn(false);
 	setCameraZoomOut(false);
+	setCameraPitchUp(false);
+	setCameraPitchDown(false);
 	setCameraTrackingDrawable(false);
 
 	m_windowLayouts.clear();
@@ -3737,6 +3762,8 @@ void InGameUI::setInputEnabled( Bool enable )
 		setCameraRotateRight( false );		// KP6
 		setCameraZoomIn( false );					// KP8
 		setCameraZoomOut( false );				// KP2
+		setCameraPitchUp( false );				// KP9
+		setCameraPitchDown( false );			// KP3
 	}
 }
 
