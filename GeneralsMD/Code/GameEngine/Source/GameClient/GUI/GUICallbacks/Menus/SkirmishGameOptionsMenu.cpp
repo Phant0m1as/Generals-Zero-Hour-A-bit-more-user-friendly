@@ -247,7 +247,8 @@ Int SkirmishPreferences::getPreferredFaction()
 	}
 
 	ret = atoi(it->second.str());
-	if (ret < PLAYERTEMPLATE_MIN || ret >= ThePlayerTemplateStore->getPlayerTemplateCount())
+	// TheSuperHackers @feature Phantomias 30/10/2026 Also keep a random general of one faction.
+	if (!isValidSlotPlayerTemplate(ret))
 		ret = PLAYERTEMPLATE_RANDOM;
 
 	if (ret >= 0)
@@ -821,7 +822,7 @@ void updateMapStartSpots( GameInfo *myGame, GameWindow *buttonMapStartPositions[
 		GameSlot *gs =myGame->getSlot(i);
 		if(onLoadScreen)
 		{
-			if(gs->getApparentStartPos() >=0 && gs->getApparentStartPos() < mmd.m_numPlayers && gs->getPlayerTemplate() > PLAYERTEMPLATE_MIN )
+			if(gs->getApparentStartPos() >=0 && gs->getApparentStartPos() < mmd.m_numPlayers && gs->getPlayerTemplate() != PLAYERTEMPLATE_OBSERVER )
 			{
 				AsciiString displayNumber;
 				displayNumber.format("NUMBER:%d",i + 1);
@@ -830,7 +831,7 @@ void updateMapStartSpots( GameInfo *myGame, GameWindow *buttonMapStartPositions[
 		}
 		else
 		{
-			if(gs->getStartPos() >=0 && gs->getStartPos() < mmd.m_numPlayers && gs->getPlayerTemplate() > PLAYERTEMPLATE_MIN )
+			if(gs->getStartPos() >=0 && gs->getStartPos() < mmd.m_numPlayers && gs->getPlayerTemplate() != PLAYERTEMPLATE_OBSERVER )
 			{
 				AsciiString displayNumber;
 				displayNumber.format("NUMBER:%d",i + 1);
@@ -1135,7 +1136,7 @@ void InitSkirmishGameGadgets()
 	{
 		PopulateColorComboBox(i, comboBoxColor, TheSkirmishGameInfo );
 		GadgetComboBoxSetSelectedPos(comboBoxColor[i], 0);
-		PopulatePlayerTemplateComboBox(i, comboBoxPlayerTemplate, TheSkirmishGameInfo, FALSE );
+		PopulatePlayerTemplateComboBox(i, comboBoxPlayerTemplate, TheSkirmishGameInfo, FALSE, TRUE );
 		PopulateTeamComboBox(i, comboBoxTeam, TheSkirmishGameInfo );
 
 //		if (buttonStartPosition[i])

@@ -175,6 +175,11 @@ void RefreshGameInfoWindow(GameInfo *gameInfo, UnicodeString gameName)
 		{
 			GadgetListBoxAddEntryImage(listBoxPlayers, observerIcon,addedRow, 0, 22,25);
 		}
+		// TheSuperHackers @feature Phantomias 30/10/2026 A random general of one faction shows the icon of the faction.
+		else if(getRandomFactionPlayerTemplateForDisplay(playerTemplate) != nullptr)
+		{
+			GadgetListBoxAddEntryImage(listBoxPlayers, getRandomFactionPlayerTemplateForDisplay(playerTemplate)->getSideIconImage(),addedRow, 0, 22,25);
+		}
 		else if(playerTemplate < 0 || playerTemplate >= ThePlayerTemplateStore->getPlayerTemplateCount())
 		{
 			///< @todo: When we get art that shows player's side, then we'll actually draw the art instead of putting in text

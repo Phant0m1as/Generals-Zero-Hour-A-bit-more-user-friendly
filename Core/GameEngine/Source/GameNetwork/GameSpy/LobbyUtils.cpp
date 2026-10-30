@@ -871,7 +871,8 @@ void playerTemplateComboBoxTooltip(GameWindow *wndComboBox, WinInstanceData *ins
 	GadgetComboBoxGetSelectedPos(wndComboBox, &index);
 	Int templateNum = (Int)(intptr_t)GadgetComboBoxGetItemData(wndComboBox, index);
 	UnicodeString ustringTooltip;
-	if (templateNum == -1)
+	// TheSuperHackers @feature Phantomias 30/10/2026 A random general of one faction uses the "Random" tooltip too.
+	if (isRandomPlayerTemplate(templateNum))
 	{
 			// the "Random" template is always first
 			ustringTooltip = TheGameText->fetch("TOOLTIP:BioStrategyLong_Random");
@@ -902,7 +903,8 @@ void playerTemplateListBoxTooltip(GameWindow *wndListBox, WinInstanceData *instD
 
 	Int templateNum = (Int)(intptr_t)GadgetListBoxGetItemData(wndListBox, row, col);
 	UnicodeString ustringTooltip;
-	if (templateNum == -1)
+	// TheSuperHackers @feature Phantomias 30/10/2026 A random general of one faction uses the "Random" tooltip too.
+	if (isRandomPlayerTemplate(templateNum))
 	{
 			// the "Random" template is always first
 			ustringTooltip = TheGameText->fetch("TOOLTIP:BioStrategyLong_Random");

@@ -387,7 +387,8 @@ void LANAPI::OnGameOptions( UnsignedInt playerIP, Int playerSlot, AsciiString op
 				}
 				else if (key == "PlayerTemplate")
 				{
-					if (val >= PLAYERTEMPLATE_MIN && val < ThePlayerTemplateStore->getPlayerTemplateCount() && val != slot->getPlayerTemplate())
+					// TheSuperHackers @feature Phantomias 30/10/2026 Also accept a random general of one faction.
+					if (isValidSlotPlayerTemplate(val) && val != slot->getPlayerTemplate())
 					{
 						slot->setPlayerTemplate(val);
 						if (val == PLAYERTEMPLATE_OBSERVER)
