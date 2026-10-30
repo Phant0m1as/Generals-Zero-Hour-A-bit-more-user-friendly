@@ -127,6 +127,113 @@ static Bool isSlotLocalAlly(const GameSlot *slot)
 	return FALSE;
 }
 
+// TheSuperHackers @feature Phantomias 30/10/2026 Random general of one faction ------------------------
+
+/// Collects the distinct base sides of all playable player templates, in the order of the player templates.
+static void collectRandomFactionBaseSides( std::vector<AsciiString>& baseSides )
+{
+	baseSides.clear();
+	if (ThePlayerTemplateStore == nullptr)
+		return;
+
+	for (Int i = 0; i < ThePlayerTemplateStore->getPlayerTemplateCount(); ++i)
+	{
+		const PlayerTemplate *pt = ThePlayerTemplateStore->getNthPlayerTemplate(i);
+		if (pt == nullptr || pt->getStartingBuilding().isEmpty() || pt->getBaseSide().isEmpty())
+			continue;
+
+		if (std::find(baseSides.begin(), baseSides.end(), pt->getBaseSide()) != baseSides.end())
+			continue;
+
+		if ((Int)baseSides.size() >= PLAYERTEMPLATE_RANDOM_FACTION_MAX_COUNT)
+			break;
+
+		baseSides.push_back(pt->getBaseSide());
+	}
+}
+
+Int getRandomFactionCount()
+{
+	std::vector<AsciiString> baseSides;
+	collectRandomFactionBaseSides(baseSides);
+	return (Int)baseSides.size();
+}
+
+Int getRandomFactionPlayerTemplate( Int factionIndex )
+{
+	return PLAYERTEMPLATE_RANDOM_FACTION_FIRST - factionIndex;
+}
+
+AsciiString getRandomFactionBaseSide( Int playerTemplate )
+{
+	if (playerTemplate > PLAYERTEMPLATE_RANDOM_FACTION_FIRST || playerTemplate < PLAYERTEMPLATE_RANDOM_FACTION_LAST)
+		return AsciiString::TheEmptyString;
+
+	std::vector<AsciiString> baseSides;
+	collectRandomFactionBaseSides(baseSides);
+
+	const Int factionIndex = PLAYERTEMPLATE_RANDOM_FACTION_FIRST - playerTemplate;
+	if (factionIndex >= (Int)baseSides.size())
+		return AsciiString::TheEmptyString;
+
+	return baseSides[factionIndex];
+}
+
+Bool isRandomFactionPlayerTemplate( Int playerTemplate )
+{
+	return !getRandomFactionBaseSide(playerTemplate).isEmpty();
+}
+
+Bool isRandomPlayerTemplate( Int playerTemplate )
+{
+	return playerTemplate == PLAYERTEMPLATE_RANDOM || isRandomFactionPlayerTemplate(playerTemplate);
+}
+
+Bool isValidSlotPlayerTemplate( Int playerTemplate )
+{
+	if (playerTemplate >= PLAYERTEMPLATE_MIN)
+		return playerTemplate < ThePlayerTemplateStore->getPlayerTemplateCount();
+
+	return isRandomFactionPlayerTemplate(playerTemplate);
+}
+
+const PlayerTemplate *getRandomFactionPlayerTemplateForDisplay( Int playerTemplate )
+{
+	const AsciiString baseSide = getRandomFactionBaseSide(playerTemplate);
+	if (baseSide.isEmpty())
+		return nullptr;
+
+	// Prefer the original faction (USA, China, GLA) over the generals of the faction.
+	const PlayerTemplate *firstOfFaction = nullptr;
+	for (Int i = 0; i < ThePlayerTemplateStore->getPlayerTemplateCount(); ++i)
+	{
+		const PlayerTemplate *pt = ThePlayerTemplateStore->getNthPlayerTemplate(i);
+		if (pt == nullptr || pt->getStartingBuilding().isEmpty() || pt->getBaseSide() != baseSide)
+			continue;
+
+		if (pt->isOldFaction())
+			return pt;
+
+		if (firstOfFaction == nullptr)
+			firstOfFaction = pt;
+	}
+	return firstOfFaction;
+}
+
+UnicodeString getRandomFactionDisplayName( Int playerTemplate )
+{
+	UnicodeString name = TheGameText->fetch("GUI:Random");
+	const PlayerTemplate *pt = getRandomFactionPlayerTemplateForDisplay(playerTemplate);
+	if (pt != nullptr)
+	{
+		name.concat(L" ");
+		name.concat(pt->getDisplayName());
+	}
+	return name;
+}
+
+// ---------------------------------------------------------------------------------------------------
+
 UnicodeString GameSlot::getApparentPlayerTemplateDisplayName() const
 {
 	if (TheMultiplayerSettings && TheMultiplayerSettings->showRandomPlayerTemplate() &&
@@ -134,12 +241,22 @@ UnicodeString GameSlot::getApparentPlayerTemplateDisplayName() const
 	{
 		return TheGameText->fetch("GUI:Random");
 	}
+	// TheSuperHackers @feature Phantomias 30/10/2026 Opponents with a random general of one faction show only the faction.
+	else if (TheMultiplayerSettings && TheMultiplayerSettings->showRandomPlayerTemplate() &&
+		isRandomFactionPlayerTemplate(m_origPlayerTemplate) && !isSlotLocalAlly(this))
+	{
+		return getRandomFactionDisplayName(m_origPlayerTemplate);
+	}
 	else if (m_origPlayerTemplate == PLAYERTEMPLATE_OBSERVER)
 	{
 		return TheGameText->fetch("GUI:Observer");
 	}
 	DEBUG_LOG(("Fetching player template display name for player template %d (orig is %d)",
 		m_playerTemplate, m_origPlayerTemplate));
+	if (isRandomFactionPlayerTemplate(m_playerTemplate))
+	{
+		return getRandomFactionDisplayName(m_playerTemplate);
+	}
 	if (m_playerTemplate < 0)
 	{
 		return TheGameText->fetch("GUI:Random");
@@ -1361,7 +1478,8 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 								break;
 							}
 							Int playerTemplate = atoi(slotValue.str());
-							if (playerTemplate < PLAYERTEMPLATE_MIN || playerTemplate >= ThePlayerTemplateStore->getPlayerTemplateCount())
+							// TheSuperHackers @feature Phantomias 30/10/2026 Also accept a random general of one faction.
+							if (!isValidSlotPlayerTemplate(playerTemplate))
 							{
 								optionsOk = false;
 								DEBUG_LOG(("ParseAsciiStringToGameInfo - player template value is invalid, quitting"));
@@ -1493,7 +1611,8 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 								break;
 							}
 							Int playerTemplate = atoi(slotValue.str());
-							if (playerTemplate < PLAYERTEMPLATE_MIN || playerTemplate >= ThePlayerTemplateStore->getPlayerTemplateCount())
+							// TheSuperHackers @feature Phantomias 30/10/2026 Also accept a random general of one faction.
+							if (!isValidSlotPlayerTemplate(playerTemplate))
 							{
 								optionsOk = false;
 								DEBUG_LOG(("ParseAsciiStringToGameInfo - player template value is invalid, quitting"));

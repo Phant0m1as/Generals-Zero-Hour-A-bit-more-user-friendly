@@ -231,7 +231,7 @@ void PopulateColorComboBox(Int comboBox, GameWindow *comboArray[], GameInfo *myG
 
 // -----------------------------------------------------------------------------
 
-void PopulatePlayerTemplateComboBox(Int comboBox, GameWindow *comboArray[], GameInfo *myGame, Bool allowObservers)
+void PopulatePlayerTemplateComboBox(Int comboBox, GameWindow *comboArray[], GameInfo *myGame, Bool allowObservers, Bool allowRandomFactions)
 {
 	Int numPlayerTemplates = ThePlayerTemplateStore->getPlayerTemplateCount();
 	UnicodeString playerTemplateName;
@@ -241,6 +241,18 @@ void PopulatePlayerTemplateComboBox(Int comboBox, GameWindow *comboArray[], Game
 	MultiplayerColorDefinition *def = TheMultiplayerSettings->getColor(PLAYERTEMPLATE_RANDOM);
 	Int newIndex = GadgetComboBoxAddEntry(comboArray[comboBox], TheGameText->fetch("GUI:Random"), def->getColor());
 	GadgetComboBoxSetItemData(comboArray[comboBox], newIndex, (void *)PLAYERTEMPLATE_RANDOM);
+
+	// TheSuperHackers @feature Phantomias 30/10/2026 A random general of one faction, e.g. "Random China".
+	if (allowRandomFactions)
+	{
+		const Int numFactions = getRandomFactionCount();
+		for (Int f = 0; f < numFactions; ++f)
+		{
+			const Int randomFaction = getRandomFactionPlayerTemplate(f);
+			newIndex = GadgetComboBoxAddEntry(comboArray[comboBox], getRandomFactionDisplayName(randomFaction), def->getColor());
+			GadgetComboBoxSetItemData(comboArray[comboBox], newIndex, (void *)(intptr_t)randomFaction);
+		}
+	}
 
 	std::set<AsciiString> seenSides;
 

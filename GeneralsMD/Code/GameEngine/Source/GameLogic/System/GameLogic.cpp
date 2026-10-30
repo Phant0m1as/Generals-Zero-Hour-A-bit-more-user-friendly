@@ -748,9 +748,14 @@ static void populateRandomSideAndColor( GameInfo *game )
 		// clean up random factions
 		Int playerTemplateIdx = slot->getPlayerTemplate();
 		DEBUG_LOG(("Player %d has playerTemplate index %d", i, playerTemplateIdx));
+
+		// TheSuperHackers @feature Phantomias 30/10/2026 A random general of one faction is chosen only from that faction.
+		// The random values are drawn exactly like for a fully random general, so games without this option are unaffected.
+		const AsciiString randomFactionBaseSide = getRandomFactionBaseSide(playerTemplateIdx);
+
 		while (playerTemplateIdx != PLAYERTEMPLATE_OBSERVER && (playerTemplateIdx < 0 || playerTemplateIdx >= ThePlayerTemplateStore->getPlayerTemplateCount()))
 		{
-			DEBUG_ASSERTCRASH(playerTemplateIdx == PLAYERTEMPLATE_RANDOM, ("Non-random bad playerTemplate %d in slot %d", playerTemplateIdx, i));
+			DEBUG_ASSERTCRASH(isRandomPlayerTemplate(playerTemplateIdx), ("Non-random bad playerTemplate %d in slot %d", playerTemplateIdx, i));
 #ifdef MORE_RANDOM
 			// our RNG is basically shit -- horribly nonrandom at the start of the sequence.
 			// get a few values at random to get rid of the dreck.
@@ -760,8 +765,21 @@ static void populateRandomSideAndColor( GameInfo *game )
 			{
 				GameLogicRandomValue(0, 1);	// ignore result
 			}
-			Int idxIdx = GameLogicRandomValue(0, 1000) % startSlots.size();
-			playerTemplateIdx = startSlots[idxIdx];
+
+			std::vector<Int> factionSlots;
+			if (!randomFactionBaseSide.isEmpty())
+			{
+				for (size_t s = 0; s < startSlots.size(); ++s)
+				{
+					const PlayerTemplate* ptFaction = ThePlayerTemplateStore->getNthPlayerTemplate(startSlots[s]);
+					if (ptFaction && ptFaction->getBaseSide() == randomFactionBaseSide)
+						factionSlots.push_back(startSlots[s]);
+				}
+			}
+			const std::vector<Int>& candidateSlots = factionSlots.empty() ? startSlots : factionSlots;
+
+			Int idxIdx = GameLogicRandomValue(0, 1000) % candidateSlots.size();
+			playerTemplateIdx = candidateSlots[idxIdx];
 #else
 			playerTemplateIdx = GameLogicRandomValue(0, ThePlayerTemplateStore->getPlayerTemplateCount()-1);
 #endif

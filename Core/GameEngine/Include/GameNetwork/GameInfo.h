@@ -50,6 +50,28 @@ enum
 	PLAYERTEMPLATE_MIN = PLAYERTEMPLATE_OBSERVER
 };
 
+// TheSuperHackers @feature Phantomias 30/10/2026 A slot can choose a random general of one faction, e.g. "Random China".
+// The factions are the distinct base sides of the playable player templates, in the order of the player templates.
+// Faction n is stored as player template value PLAYERTEMPLATE_RANDOM_FACTION_FIRST - n. These values are below
+// PLAYERTEMPLATE_MIN, so games that use them can only be played with game versions that know them.
+enum
+{
+	PLAYERTEMPLATE_RANDOM_FACTION_FIRST = -3,
+	PLAYERTEMPLATE_RANDOM_FACTION_MAX_COUNT = 8,
+	PLAYERTEMPLATE_RANDOM_FACTION_LAST = PLAYERTEMPLATE_RANDOM_FACTION_FIRST - PLAYERTEMPLATE_RANDOM_FACTION_MAX_COUNT + 1
+};
+
+class PlayerTemplate;
+
+Int getRandomFactionCount();																					///< Number of factions that can be chosen as random faction
+Int getRandomFactionPlayerTemplate( Int factionIndex );							///< Player template value for the random faction with this index
+Bool isRandomFactionPlayerTemplate( Int playerTemplate );						///< TRUE if the value is a valid random faction
+Bool isRandomPlayerTemplate( Int playerTemplate );									///< TRUE if the value is random or a random faction
+Bool isValidSlotPlayerTemplate( Int playerTemplate );								///< TRUE if a slot may use this player template value
+AsciiString getRandomFactionBaseSide( Int playerTemplate );					///< Base side of a random faction, or empty
+const PlayerTemplate *getRandomFactionPlayerTemplateForDisplay( Int playerTemplate ); ///< The original faction of a random faction, for its name and icon
+UnicodeString getRandomFactionDisplayName( Int playerTemplate );		///< For example "Random China"
+
 /**
   * GameSlot class - maintains information about the contents of a
 	* game slot.  This persists throughout the game.
@@ -80,7 +102,8 @@ public:
 
 	void setPlayerTemplate( Int playerTemplate )
 	{ m_playerTemplate = playerTemplate;
-		if (playerTemplate <= PLAYERTEMPLATE_MIN)
+		// TheSuperHackers @feature Phantomias 30/10/2026 Only observers lose their start position, not random factions.
+		if (playerTemplate == PLAYERTEMPLATE_OBSERVER)
 			m_startPos = -1;
 	 }
 	Int getPlayerTemplate() const { return m_playerTemplate; }

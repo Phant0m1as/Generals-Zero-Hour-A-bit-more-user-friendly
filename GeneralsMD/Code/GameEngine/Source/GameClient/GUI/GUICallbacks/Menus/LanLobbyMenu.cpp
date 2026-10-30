@@ -148,7 +148,8 @@ Int LANPreferences::getPreferredFaction()
 	}
 
 	ret = atoi(it->second.str());
-	if (ret == PLAYERTEMPLATE_OBSERVER || ret < PLAYERTEMPLATE_MIN || ret >= ThePlayerTemplateStore->getPlayerTemplateCount())
+	// TheSuperHackers @feature Phantomias 30/10/2026 Also keep a random general of one faction.
+	if (ret == PLAYERTEMPLATE_OBSERVER || !isValidSlotPlayerTemplate(ret))
 		ret = PLAYERTEMPLATE_RANDOM;
 
 	if (ret >= 0)
