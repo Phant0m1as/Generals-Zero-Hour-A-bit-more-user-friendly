@@ -13,9 +13,9 @@ It is regularly updated to the latest TheSuperHackers code.
 | **Map favorites** | Mark maps as favorites in the Skirmish, LAN and Online map selection and filter the list to show only your favorites. Favorites are shown in gold and stored locally. |<img width="250" alt="Feature-Favorite Maps" src="https://github.com/user-attachments/assets/ef20ef5a-014f-4f64-8f6a-2e36d85f1bab" />| `yes` |
 | **Map search** | Search field above the map list that filters maps by name while you type (case insensitive). Works together with the favorites filter. | <img width="250"  alt="Feature-Map Search" src="https://github.com/user-attachments/assets/3e5cf946-1812-46e7-97e1-ecffe0a7dc17" /> |  `yes`  |
 |  **Camera height like Generals Online** | higher maximum zoom, scaled for widescreen monitors | no screen |  `no`  |
-|  **Camera tilt** | Page Up / Numpad 9 and Page Down / Numpad 3 tilt the camera, and Home / Numpad 7 resets it. The tilt is limited like in Generals Online (37.5° in matches, 16.5° in replays). | <img width="3840" height="2160" alt="unknown_2026 11 02-14 55" src="https://github.com/user-attachments/assets/4a398184-36c5-470a-b75e-2999c8aa7aa5" />
+|  **Camera tilt** | Page Up / Numpad 9 and Page Down / Numpad 3 tilt the camera, and Home / Numpad 7 resets it. The tilt is limited like in Generals Online (37.5° in matches, 16.5° in replays). | <img  width="250" alt="unknown_2026 11 02-14 55" src="https://github.com/user-attachments/assets/4a398184-36c5-470a-b75e-2999c8aa7aa5" />
  |  `no`  |
-|  **Random faction** | Besides “Random”, the army selection in skirmish and LAN games now offers “Random USA”, “Random China” and “Random GLA”. The game then picks a random general of that faction at the start. | <img width="3840" height="2160" alt="unknown_2026 11 02-14 54" src="https://github.com/user-attachments/assets/973127b9-58e9-414c-97de-5d5cb15224f5" />
+|  **Random faction** | Besides “Random”, the army selection in skirmish and LAN games now offers “Random USA”, “Random China” and “Random GLA”. The game then picks a random general of that faction at the start. | <img  width="250" alt="unknown_2026 11 02-14 54" src="https://github.com/user-attachments/assets/973127b9-58e9-414c-97de-5d5cb15224f5" />
  |  `no`  |
 
 
